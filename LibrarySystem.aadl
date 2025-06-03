@@ -1,0 +1,214 @@
+package LibrarySystem
+public
+
+    -- WITH CLAUSES --
+    with SEI;
+    with Data_Model;
+    with Base_Types;
+
+    -- DATA TYPES --
+    
+    data BookID
+        properties
+            Data_Model::base_type => (classifier (Base_Types::Unsigned_32));
+            Data_Size => 4 Bytes;
+    end BookID;
+
+    data UserID
+        properties
+            Data_Model::base_type => (classifier (Base_Types::Unsigned_32));
+            Data_Size => 4 Bytes;
+    end UserID;
+
+    data BookStatus
+        properties
+            Data_Model::Enumerators => ("Available", "Borrowed", "Reserved", "Lost");
+            Data_Model::base_type => (classifier (Base_Types::Integer));
+            Data_Size => 2 Bytes;
+    end BookStatus;
+
+    data ReservationRequest
+        properties
+            Data_Model::Data_Representation => String;
+            Data_Model::base_type => (classifier (Base_Types::String));
+            Data_Size => 64 Bytes;
+    end ReservationRequest;
+
+    data ReservationResponse
+        properties
+            Data_Model::Enumerators => ("Success", "BookNotAvailable", "UserLimitExceeded", "Error");
+            Data_Model::base_type => (classifier (Base_Types::Integer));
+            Data_Size => 2 Bytes;
+    end ReservationResponse;
+
+    -- SYSTEM --
+    system LibrarySystem
+    end LibrarySystem;
+
+    system implementation LibrarySystem.impl
+        subcomponents
+            -- Devices (Hardware)
+            userTerminal: device user_terminal;
+            bookScanner: device book_scanner;
+            dbServer: device db_server;
+            network: bus Ethernet.impl;
+            cpu: processor CPU.impl;
+            ram: memory RAM.impl;
+
+            -- Processes (Software)
+            userInterface: process UserInterface.impl;
+            reservationSystem: process ReservationSystem.impl;
+            inventoryManager: process InventoryManager.impl;
+
+        connections
+            -- Hardware connections
+            c1: bus access userTerminal.bus_access <-> network;
+            c2: bus access bookScanner.bus_access <-> network;
+            c3: bus access dbServer.bus_access <-> network;
+            c4: bus access cpu.ethernetAccess <-> network;
+            c5: bus access cpu.hwcAccess <-> ram.hwcAccess;
+
+            -- Software connections
+            c6: port userInterface.reservation_request -> reservationSystem.request;
+            c7: port reservationSystem.response -> userInterface.reservation_response;
+            c8: port reservationSystem.book_query -> inventoryManager.query;
+            c9: port inventoryManager.status -> reservationSystem.book_status;
+    end LibrarySystem.impl;
+
+    -- DEVICES --
+    device user_terminal
+        features
+            bus_access: requires bus access Ethernet;
+        properties
+            SEI::GrossWeight => 0.5 kg;
+    end user_terminal;
+
+    device book_scanner
+        features
+            bus_access: requires bus access Ethernet;
+        properties
+            SEI::GrossWeight => 0.3 kg;
+            Period => 100 ms;
+    end book_scanner;
+
+    device db_server
+        features
+            bus_access: requires bus access Ethernet;
+        properties
+            SEI::GrossWeight => 2.0 kg;
+            Period => 200 ms;
+    end db_server;
+
+    -- PROCESSES --
+    process UserInterface
+        features
+            reservation_request: out data port ReservationRequest;
+            reservation_response: in data port ReservationResponse;
+    end UserInterface;
+
+    process implementation UserInterface.impl
+        subcomponents
+            uiThread: thread UIThread.impl;
+        connections
+            c1: port uiThread.request_out -> reservation_request;
+            c2: port reservation_response -> uiThread.response_in;
+    end UserInterface.impl;
+
+    process ReservationSystem
+        features
+            request: in data port ReservationRequest;
+            response: out data port ReservationResponse;
+            book_query: out data port BookID;
+            book_status: in data port BookStatus;
+    end ReservationSystem;
+
+    process implementation ReservationSystem.impl
+        subcomponents
+            reservationThread: thread ReservationThread.impl;
+        connections
+            c1: port request -> reservationThread.request_in;
+            c2: port reservationThread.response_out -> response;
+            c3: port reservationThread.book_query_out -> book_query;
+            c4: port book_status -> reservationThread.status_in;
+    end ReservationSystem.impl;
+
+    process InventoryManager
+        features
+            query: in data port BookID;
+            status: out data port BookStatus;
+    end InventoryManager;
+
+    process implementation InventoryManager.impl
+        subcomponents
+            dbThread: thread DBThread.impl;
+        connections
+            c1: port query -> dbThread.query_in;
+            c2: port dbThread.status_out -> status;
+    end InventoryManager.impl;
+
+    -- THREADS --
+    thread UIThread
+        features
+            request_out: out data port ReservationRequest;
+            response_in: in data port ReservationResponse;
+        properties
+            SEI::MIPSBudget => 10.0 mips;
+    end UIThread;
+
+    thread implementation UIThread.impl
+    end UIThread.impl;
+
+    thread ReservationThread
+        features
+            request_in: in data port ReservationRequest;
+            response_out: out data port ReservationResponse;
+            book_query_out: out data port BookID;
+            status_in: in data port BookStatus;
+        properties
+            SEI::MIPSBudget => 20.0 mips;
+    end ReservationThread;
+
+    thread implementation ReservationThread.impl
+    end ReservationThread.impl;
+
+    thread DBThread
+        features
+            query_in: in data port BookID;
+            status_out: out data port BookStatus;
+        properties
+            SEI::MIPSBudget => 15.0 mips;
+    end DBThread;
+
+    thread implementation DBThread.impl
+    end DBThread.impl;
+
+    -- HARDWARE COMPONENTS --
+    bus HWConnection
+	end HWConnection;
+    
+    bus Ethernet
+    end Ethernet;
+
+    bus implementation Ethernet.impl
+    end Ethernet.impl;
+
+    processor CPU
+        features
+            ethernetAccess: requires bus access Ethernet;
+            hwcAccess: provides bus access HWConnection;
+        properties
+            SEI::MIPSCapacity => 200.0 mips;
+    end CPU;
+
+    processor implementation CPU.impl
+    end CPU.impl;
+
+    memory RAM
+        features
+            hwcAccess: requires bus access HWConnection;
+    end RAM;
+
+    memory implementation RAM.impl
+    end RAM.impl;
+
+end LibrarySystem;
