@@ -59,6 +59,7 @@ public
             bookScanner: device book_scanner;
             dbServer: device db_server;
             network: bus Ethernet.impl;
+            hw: bus HWConnection.impl;
             cpu: processor CPU.impl;
             ram: memory RAM.impl;
 
@@ -93,6 +94,8 @@ public
 
             -- Book scanner connection
             c15: port bookScanner.scanned_book_id -> inventoryManager.scanned_book_id;
+            
+            c16: bus access ram.hwcAccess <-> hw;
 
         properties
             Actual_Processor_Binding => (reference (cpu)) applies to userInterface;
@@ -109,6 +112,7 @@ public
             Actual_Connection_Binding => (reference (network)) applies to c2;
             Actual_Connection_Binding => (reference (network)) applies to c3;
             Actual_Connection_Binding => (reference (network)) applies to c4;
+            Actual_Connection_Binding => (reference (hw)) applies to c5;
             Actual_Connection_Binding => (reference (network)) applies to c6;
             Actual_Connection_Binding => (reference (network)) applies to c7;
             Actual_Connection_Binding => (reference (network)) applies to c8;
@@ -278,8 +282,13 @@ public
     -- HARDWARE COMPONENTS --
     bus HWConnection
     end HWConnection;
+    
+    bus implementation HWConnection.impl
+    end HWConnection.impl;
 
     bus Ethernet
+    	properties
+    		SEI::GrossWeight => 1.5 kg;
     end Ethernet;
 
     bus implementation Ethernet.impl
