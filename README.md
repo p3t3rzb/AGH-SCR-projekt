@@ -64,7 +64,7 @@
 
 6. **Model - schematy**
     - `LibrarySystem`
-     ![Library System]([https://github.com/p3t3rzb/AGH-SCR-projekt/blob/main/LibrarySystem/schema.png?raw=true](https://github.com/p3t3rzb/AGH-SCR-projekt/blob/main/LibrarySystem/schema.png?raw=true))
+     ![Library System](https://github.com/p3t3rzb/AGH-SCR-projekt/blob/main/LibrarySystem/schema.png)
 
 8. **Analizy modelu**
    - Check Binding Constraints - "No problems found" ✅
