@@ -31,7 +31,7 @@
     - Rejestruje każde działanie w dzienniku zdarzeń.
     ```
 
-   4. **Komponenty**:
+4. **Komponenty**:
     - **data**:
         - BookID, UserID – identyfikatory książek i użytkowników,
         - BookStatus – status książki (dostępna, wypożyczona, zarezerwowana, zagubiona),
@@ -61,3 +61,13 @@
         - thread ReservationThread – wątek logiki rezerwacyjnej obsługujący komunikację z menedżerem inwentarza i loggerem,
         - thread DBThread – wątek obsługujący zapytania do bazy danych i status książek,
         - thread LoggerThread – wątek rejestrujący zdarzenia w systemie.
+
+6. **Model - schematy**
+
+7. **Analizy modelu**
+   - Check Binding Constraints - "No problems found" ✅
+   - Check Connection Binding Consistency - Brak ostrzeżeń oraz błędów ✅
+   - Weight Analysis - Brak błędów ✅
+
+8. **Inne informacje zależne od tematu**
+    Brak.
