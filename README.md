@@ -63,11 +63,13 @@
         - thread LoggerThread – wątek rejestrujący zdarzenia w systemie.
 
 6. **Model - schematy**
+    - `LibrarySystem`
+     ![Library System]([https://github.com/p3t3rzb/AGH-SCR-projekt/blob/main/LibrarySystem/schema.png?raw=true](https://github.com/p3t3rzb/AGH-SCR-projekt/blob/main/LibrarySystem/schema.png?raw=true))
 
-7. **Analizy modelu**
+8. **Analizy modelu**
    - Check Binding Constraints - "No problems found" ✅
    - Check Connection Binding Consistency - Brak ostrzeżeń oraz błędów ✅
    - Weight Analysis - Brak błędów ✅
 
-8. **Inne informacje zależne od tematu**
+9. **Inne informacje zależne od tematu**
     Brak.
